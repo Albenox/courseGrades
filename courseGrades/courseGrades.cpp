@@ -18,8 +18,10 @@
 #include <sstream>
 using namespace std;
 
-//string studentsTests(char buffer);
+//Function to extract the number of students and tests from the first line of the file, linked to the addresses so the values do not need to be returned, and can be a void function
+void studentsTests(const string &line, int &numStudents, int &numTests);
 
+//A struct for students
 struct student {
     //Variables for student struct
     string name;
@@ -32,10 +34,6 @@ struct student {
 
 //Main function
 int main()  {
-	//Variables for the number of students and tests, which will be extracted from the first line of the file
-	int numStudents;
-	int numTests;
-
     //Grabs the file and creates a stream that is similar to cin, that can be used to extract values for the program
     //Additionally, I no longer need to close the file at the end of the program as the ifstream object will close automatically at the end of the program
     ifstream file("student_data.txt");
@@ -47,6 +45,8 @@ int main()  {
     }
     //Allows the program to continue if the file was successfully opened
     else {
+        //Variables for the number of students and tests, which will be extracted from the first line of the file
+        int numStudents, numTests;
         //Declares the string variable "line", which will hold the current line read from getline()
         string line;
 		
@@ -54,29 +54,43 @@ int main()  {
         //Sidenote, getline is perfect and makes this SO MUCH EASIER I LOVE IT!!!
         getline(file, line);
         
-        //stringstream creates a copy of the string "line" and sets the stringstream variable "ss" as a copy that can be used to break the line into tokens
-        stringstream ss(line);
-        
-        //Extracts and automatically runs through tokens of the line each time ss is called
-		ss >> numStudents;
-		ss >> numTests;
-		
-        cout << "Testing number of students: " << numStudents << endl;
-		cout << "Testing number of tests: " << numTests << endl;
+        //Function to extract the number of students and tests from the first line of the file, linked to the addresses so the values do not need to be returned, and can be a void function
+        studentsTests(line, numStudents, numTests);
 
+        //Creates a pointer, "students", that points to an array of student structs, which will dynamically allocate an amount of memory for the students
+        student* students = new student[numStudents];
 
-		//Reads the file line by line and prints each line to the console until the end of the file is reached
-        //This is done by running fgets and checking to see if it returns NULL, which indicates the end of the file if so, ending the loop
+		//A forloop that runs through a number of lines from the file equal tothe number of students, to ensure each are covered
         for (int i = 0; i < numStudents; i++) {
+            //An automatically advancing method to read the next line of the file and store it into the string variable "line"
             getline(file, line);
+            //stringstream creates a copy of the string "line" and sets the stringstream variable "ss" as a copy that can be used to break the line into tokens
+            stringstream ss(line);
+            //A series of extractions from the stringstream variable "ss" that extracts by tokens to fill out each student's information in order
+            ss >> students[i].name;
+			ss >> students[i].id;
+
+			//A for loop that runs sets a number of tokens into the current student's test score array equal to the number of tests declared on the first line
+            for (int x = 0; x < numTests; x++) {
+                //Extracts the test score for the current test and stores it in the current student's test score array at the index of the current test
+                ss >> students[i].testScores[x];
+            }
 		}
 
 		//Returns 0 to indicate that the program ended successfully
         return 0;
     }
 }
-/*
-string studentsTests(char buffer) {
-    cout << "WIP";
+
+//Function to extract the number of students and tests from the first line of the file, linked to the addresses so the values do not need to be returned, and can be a void function
+void studentsTests(const string &line, int &numStudents, int &numTests) {
+    //stringstream creates a copy of the string "line" and sets the stringstream variable "ss" as a copy that can be used to break the line into tokens
+    stringstream ss(line);
+
+    //Extracts and automatically runs through tokens of the line each time ss is called
+    ss >> numStudents;
+    ss >> numTests;
+
+    cout << "Testing number of students: " << numStudents << endl;
+    cout << "Testing number of tests: " << numTests << endl;
 }
-*/
