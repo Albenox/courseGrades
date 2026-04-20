@@ -13,7 +13,6 @@
 
 //Libraries and namespace
 #include <iostream> 
-#include <stdio.h>
 #include <fstream>
 #include <string>
 #include <sstream>
@@ -33,62 +32,44 @@ struct student {
 
 //Main function
 int main()  {
-
+	//Variables for the number of students and tests, which will be extracted from the first line of the file
 	int numStudents;
 	int numTests;
 
-	//Declares a pointer to a file stream and initializes it to nullptr
-    FILE *pFile = nullptr;
-	//Open the file for reading
-    fopen_s(&pFile, "student_data.txt", "r");
+    //Grabs the file and creates a stream that is similar to cin, that can be used to extract values for the program
+    //Additionally, I no longer need to close the file at the end of the program as the ifstream object will close automatically at the end of the program
+    ifstream file("student_data.txt");
 
 	//Checks if the file was successfully opened, which if not, ending the program with an error message
-    if (pFile == NULL) {
+    if (!file) {
         cout << "Error: file could not be opened." << endl;
         return 1;
     }
     //Allows the program to continue if the file was successfully opened
     else {
-		//Declares a character buffer to hold each line read from the file, with a maximum size of 255 characters
-        char buffer[255];
+        //Declares the string variable "line", which will hold the current line read from getline()
+        string line;
+		
+        //Grabs a line from the file and stores it into the string variable "line", which automatically progresses to the next line for the next time getline is called 
+        //Sidenote, getline is perfect and makes this SO MUCH EASIER I LOVE IT!!!
+        getline(file, line);
         
-
-        fgets(buffer, sizeof(buffer), pFile);
-        string line = buffer;
-        //stringstream ss(line) automaticall creates tokens from the line seperated by spaces, that automatically progresses through the line each time ss is called
-		//This allows us to call ss twice in a row, and since the first line will always be the number of students and tests, both variables are easily populated
+        //stringstream creates a copy of the string "line" and sets the stringstream variable "ss" as a copy that can be used to break the line into tokens
         stringstream ss(line);
-        //First token that is the number of students
-        ss >> numStudents;
-		//Second token that is the number of tests
-        ss >> numTests;
-
-		cout << "Number of students: " << numStudents << endl;
-		cout << "Number of tests: " << numTests << endl;
-
-        //TESTING STRING
-		int TESTnumStudents;
-		int TESTnumTests;
-		ifstream TESTfile("student_data.txt");
-        string TESTline;
-        getline(TESTfile , TESTline);
-        stringstream TESTss(TESTline);
-		TESTss >> TESTnumStudents;
-		TESTss >> TESTnumTests;
-		cout << "Testing number of students: " << TESTnumStudents << endl;
-		cout << "Testing number of tests: " << TESTnumTests << endl;
-        //TESTING STRING
+        
+        //Extracts and automatically runs through tokens of the line each time ss is called
+		ss >> numStudents;
+		ss >> numTests;
+		
+        cout << "Testing number of students: " << numStudents << endl;
+		cout << "Testing number of tests: " << numTests << endl;
 
 
 		//Reads the file line by line and prints each line to the console until the end of the file is reached
         //This is done by running fgets and checking to see if it returns NULL, which indicates the end of the file if so, ending the loop
-        while (fgets(buffer, sizeof(buffer), pFile) != NULL) {
-			//Prints the contents of the buffer, which is the line read from the file, to the console
-            printf("%s", buffer);
-        }
-
-		//Closes the file after reading is complete
-        fclose(pFile);
+        for (int i = 0; i < numStudents; i++) {
+            getline(file, line);
+		}
 
 		//Returns 0 to indicate that the program ended successfully
         return 0;
